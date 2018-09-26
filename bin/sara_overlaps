@@ -1,0 +1,40 @@
+#!/usr/bin/env python
+
+from pathlib import Path
+import click
+from cophub import query, count
+
+
+@click.command()
+@click.option("--collection", required=True,
+              help="A named collection available within SARA.")
+@click.option("--polygon-fname",
+              type=click.Path(file_okay=True, exists=True, dir_okay=False),
+              help=("A GDAL readable vector file containing a Polygon in "
+                    "WGS84 Latitude and Longitude coordinates."))
+@click.option("--queryparam", "-q", multiple=True,
+              help=("A SARA query parameter, given as a single "
+                    "string 'name=value'."))
+def main(collection, queryparam, polygon_fname):
+    """
+    Main level;
+    Query the SARA interface and create a PNG map containing counts
+    of acquisitions.
+    """
+    query_result = query(collection, queryparam, polygon_fname)
+    features_count = count(query_result)
+
+    # output the features defined by the union of the acquisition overlaps
+    if queryparam is None:
+        queryparam = [""]
+    params = "_".join(queryparam)
+    out_fname = "{}-{}.geojson".format(collection, params)
+
+    features_count.to_file(out_fname, driver="GeoJSON")
+
+    # TODO
+    # create a choropleth map of the overlap counts
+
+
+if __name__ == '__main__':
+    main()

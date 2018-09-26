@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+
+from pathlib import Path
+import json
+import click
+from cophub import collection_info
+
+
+@click.command()
+@click.option("--outdir", required=True,
+              type=click.Path(file_okay=False, writable=True, dir_okay=True),
+              help=("The output directory in which to write the "
+                    "collections.json file."))
+@click.option("--verbose", default=False, is_flag=True,
+              help="Print the available collections and their productTypes.")
+def main(outdir, verbose):
+    """
+    Main level;
+    Executes a SARA query that returns information about
+    the collections available from SARA.
+    """
+    collections = collection_info(outdir)
+
+    for collection in collections:
+        name = collection['name']
+        products = collection['statistics']['facets']['productType']
+
+        if verbose:
+            print("Collection:\n")
+            print("\t{}:\n".format(name))
+            print("ProductTypes:\n")
+
+            for product, _ in products.items():
+                print("\t{}\n".format(product))
+
+    out_fname = Path(outdir, "collections.json")
+
+    if not out_fname.parent.exists():
+        out_fname.parent.mkdir()
+
+    with out_fname.open('w') as src:
+        json.dump(collection_info, src, indent=4)
+
+
+if __name__ == '__main__':
+    main()
