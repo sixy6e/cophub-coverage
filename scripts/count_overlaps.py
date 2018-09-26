@@ -3,7 +3,6 @@
 import copy
 from pathlib import Path
 import tempfile
-import click
 import json
 import fiona
 from shapely.geometry import shape
@@ -12,9 +11,9 @@ from auscophub import saraclient
 import geopandas
 
 
-def _collection_info():
+def collection_info():
     """
-    An internal util for retrieving the SARA Collections information.
+    List the available collections and their products.
     """
     collections_url = "https://copernicus.nci.org.au/sara.server/1.0/collections.json"
     url_opener = saraclient.makeUrlOpener()
@@ -24,31 +23,6 @@ def _collection_info():
         return collection_info
     else:
         raise Exception(err)
-
-
-def collection_info(outdir=None):
-    """
-    List the available collections and their products.
-    """
-    collection_info = _collection_info()
-
-    for collection in collection_info:
-        name = collection['name']
-        products = collection['statistics']['facets']['productType']
-
-        print("{}:\n".format(name))
-
-        for product, _ in products.items():
-            print("\t{}\n".format(product))
-
-    if outdir is not None:
-        out_fname = Path(outdir).joinpath('collections.json')
-
-        if not out_fname.parent.exists():
-            out_fname.mkdir()
-
-        with out_fname.open('w') as src:
-            json.dump(collection_info, src, indent=4)
 
 
 def query(collection, query_params, polygon_fname=None):
@@ -83,7 +57,8 @@ def query(collection, query_params, polygon_fname=None):
 
 def count(query_result):
     """
-    Count Polygon overlaps
+    Count Polygon overlaps. Only valid geometries will be included in
+    the process.
     TODO:
         * have optional bounding box instead of the provided geometry
     """
