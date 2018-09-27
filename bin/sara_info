@@ -3,7 +3,7 @@
 from pathlib import Path
 import json
 import click
-from cophub import collection_info
+from cophub.count_overlaps import collection_info
 
 
 @click.command()
@@ -19,19 +19,19 @@ def main(outdir, verbose):
     Executes a SARA query that returns information about
     the collections available from SARA.
     """
-    collections = collection_info(outdir)
+    collections = collection_info()
 
-    for collection in collections:
+    for collection in collections['collections']:
         name = collection['name']
         products = collection['statistics']['facets']['productType']
 
         if verbose:
-            print("Collection:\n")
-            print("\t{}:\n".format(name))
-            print("ProductTypes:\n")
+            print("\nCollection:")
+            print("\t{}:".format(name))
+            print("\tProductTypes:")
 
             for product, _ in products.items():
-                print("\t{}\n".format(product))
+                print("\t\t{}".format(product))
 
     out_fname = Path(outdir, "collections.json")
 
@@ -39,7 +39,7 @@ def main(outdir, verbose):
         out_fname.parent.mkdir()
 
     with out_fname.open('w') as src:
-        json.dump(collection_info, src, indent=4)
+        json.dump(collections, src, indent=4)
 
 
 if __name__ == '__main__':
