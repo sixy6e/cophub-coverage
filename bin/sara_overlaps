@@ -2,7 +2,7 @@
 
 from pathlib import Path
 import click
-from cophub import query, count
+from cophub.count_overlaps import query, count
 
 
 @click.command()
@@ -15,25 +15,46 @@ from cophub import query, count
 @click.option("--queryparam", "-q", multiple=True,
               help=("A SARA query parameter, given as a single "
                     "string 'name=value'."))
-def main(collection, queryparam, polygon_fname):
+@click.option("--outdir", type=click.Path(dir_okay=True, file_okay=False),
+              help="A writeable directory to contain the output GeoJSON file.")
+def main(collection, queryparam, polygon_fname, outdir):
     """
     Main level;
     Query the SARA interface and create a PNG map containing counts
     of acquisitions.
+
+    :param collection:
+        A string containing a valid collection defined in SARA.
+
+    :param queryparam:
+        A list of strings containing queryable parameters
+        defined by SARA for the supplied `collection`.
+
+    :param polygon_fname:
+        A string containing the file path name to an OGR supported
+        vector file.
+
+    :param outdir:
+        A string containing the path name to a writeable directory
+        that will contain the GeoJSON output file.
+        The filename is determined from the `collection` and the
+        `queryparam` arguments.
     """
-    query_result = query(collection, queryparam, polygon_fname)
+    query_result = query(collection, list(queryparam), polygon_fname)
     features_count = count(query_result)
+
+    outdir = Path(outdir)
+    if not outdir.exists():
+        outdir.mkdir()
 
     # output the features defined by the union of the acquisition overlaps
     if queryparam is None:
         queryparam = [""]
     params = "_".join(queryparam)
-    out_fname = "{}-{}.geojson".format(collection, params)
+    out_fname = outdir.joinpath(
+        "collection={}_{}.geojson".format(collection, params))
 
-    features_count.to_file(out_fname, driver="GeoJSON")
-
-    # TODO
-    # create a choropleth map of the overlap counts
+    features_count.to_file(str(out_fname), driver="GeoJSON")
 
 
 if __name__ == '__main__':
