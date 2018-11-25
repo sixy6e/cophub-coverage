@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+
+"""
+A small util to produce the monthly coverage heat maps for
+the Australasia Copernicus Data Hub.
+"""
+
+import click
+from cophub.maps import monthly_coverage
+
+
+@click.command()
+@click.option("--indir", type=click.Path(dir_okay=True, file_okay=False),
+              help=("A readable directory that contains GeoJSON documents "
+                    "as output from cophub_overlaps."))
+@click.option("--outdir", type=click.Path(dir_okay=True, file_okay=False),
+              help="A writeable directory to contain the output GeoJSON file.")
+@click.option("--countries-fname",
+              type=click.Path(dir_okay=False, file_okay=True),
+              help=("A countries vector file suitable for providing world "
+                    "context. Such as TM_WORLD_BORDERS."))
+def main(indir, outdir, countries_fname):
+    """
+    Main level.
+    """
+    monthly_coverage(indir, outdir, countries_fname)
+
+
+if __name__ == '__main__':
+    main()
