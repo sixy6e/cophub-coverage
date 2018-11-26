@@ -13,7 +13,8 @@ setup(name='cophub',
           'click',
           'fiona',
           'geopandas',
-          'shapely'
+          'shapely',
+          'auscophub'
       ],
       dependency_links=[
           'hg+https://bitbucket.org/chchrsc/auscophub/get/auscophub-1.1.7.tar.gz#egg=auscophub-1.1.7'
