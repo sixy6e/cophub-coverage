@@ -31,7 +31,7 @@ def monthly_coverage(indir, outdir, countries_fname=None):
         None. Outputs are written to disk.
     """
     title_fmt_lookup = {
-        "S1": "{ollection} {product} {mode} {direction} {year_month}",
+        "S1": "{collection} {product} {mode} {direction} {year_month}",
         "S2": "{collection} {product} {year_month}"
     }
 
@@ -54,17 +54,17 @@ def monthly_coverage(indir, outdir, countries_fname=None):
         # expected keys are "collection", "startDate", "endDate"
         title_fmt = title_fmt_lookup[parts['collection']]
         year_month = parts['startDate'][0:7]
-        if 'mode' in parts:
+        if 'sensorMode' in parts:
             # Sentinel-1
             title = title_fmt.format(collection=parts['collection'],
-                                     product=parts['product'],
-                                     mode=parts['mode'],
-                                     direction=parts['direction'],
+                                     product=parts['productType'],
+                                     mode=parts['sensorMode'],
+                                     direction=parts['orbitDirection'],
                                      year_month=year_month)
         else:
             # Sentinel-2
             title = title_fmt.format(collection=parts['collection'],
-                                     product=parts['product'],
+                                     product=parts['productType'],
                                      year_month=year_month)
 
 
