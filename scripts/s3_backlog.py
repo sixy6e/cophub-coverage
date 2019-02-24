@@ -6,6 +6,7 @@ import pandas
 
 START, END = ["2016-04-01", "2018-11-01"]
 YEAR_MONTHS = pandas.date_range(start=START, end=END, freq='MS')
+SHP_FNAME = "/home/sixy/data/SARA/boundary/cophub-roi-wgs84.shp"
 
 for i in range(1, len(YEAR_MONTHS)):
     start_date = YEAR_MONTHS[i-1].strftime('%Y-%m-%d')
@@ -19,6 +20,7 @@ for i in range(1, len(YEAR_MONTHS)):
             "-q", "startDate={}".format(start_date),
             "-q", "completionDate={}".format(end_date),
             "-q", "productType={}".format(product),
+            "--polygon-fname", SHP_FNAME,
             "--outdir", outdir
         ]
 
