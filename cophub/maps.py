@@ -32,7 +32,8 @@ def monthly_coverage(indir, outdir, countries_fname=None):
     """
     title_fmt_lookup = {
         "S1": "{collection} {product} {mode} {direction} {year_month}",
-        "S2": "{collection} {product} {year_month}"
+        "S2": "{collection} {product} {year_month}",
+        "S3": "{collection} {product} {year_month}"
     }
 
     # output crs, centred over the Great Australian Bight
